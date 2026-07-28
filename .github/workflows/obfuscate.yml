@@ -1,9 +1,6 @@
 name: 🔐 Obfuscate edgetunnel Worker
 
 on:
-  push:
-    branches:
-      - main
   schedule:
     # 每天北京时间早上6点自动执行 (UTC 22:00)
     - cron: "0 22 * * *"
@@ -19,6 +16,8 @@ jobs:
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -70,3 +69,4 @@ jobs:
           commit_message: "🔐 Auto-obfuscate: update edgetunnel worker [skip ci]"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           file_pattern: "_worker.js origin.js"
+          push_options: "--force-with-lease"
