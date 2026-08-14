@@ -49,7 +49,6 @@ jobs:
             --string-array-threshold 0.75 \
             --transform-object-keys true \
             --unicode-escape-sequence true \
-            --self-defending true \
             --split-strings true \
             --split-strings-chunk-length 5
           echo "Obfuscated _worker.js ($(wc -c < _worker.js) bytes)"
