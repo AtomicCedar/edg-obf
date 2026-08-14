@@ -1,3 +1,20 @@
+# Dependencies
 node_modules/
+
+# Wrangler / Cloudflare Workers local dev
+.wrangler/
+.dev.vars
+
+# Cursor MCP (may contain API tokens)
+.cursor/mcp.json
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
 *.log
+
+# Local backups & test artifacts
+*.bak
+_worker_test.js
