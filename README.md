@@ -45,34 +45,61 @@ flowchart LR
 - `origin.js` — 原始未混淆代码
 - `_worker.js` — 你的专属混淆代码
 
-### 4. 部署到 Cloudflare Pages
+### 4. 部署到 Cloudflare Workers（推荐）
 
-1. 下载 `_worker.js`，将其压缩为 `worker.zip`
-2. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
-3. **Compute (Workers) → Workers 和 Pages → 创建 → Pages → 上传资产**
-4. 项目名称**不要包含** `bpb`、`vless`、`proxy` 等关键词
-5. 上传 `worker.zip`，点击部署
+#### 方式 A：使用 Wrangler 命令行一键部署（最稳妥、不易出错）
 
-### 5. 配置环境变量
+1. **登录 Cloudflare**：
+   ```bash
+   npx wrangler login
+   ```
+2. **创建 KV 命名空间**：
+   ```bash
+   npx wrangler kv namespace create KV
+   ```
+   复制终端输出的 `id`，替换 [`wrangler.toml`](file:///c:/Users/Administrator/Desktop/edgetunnel-obfuscated/wrangler.toml) 中 `id = "LOCAL_KV_ID"` 这一行。
+3. **设置管理员密码**：
+   ```bash
+   npx wrangler secret put ADMIN
+   # 输入你的后台管理密码
+   ```
+4. **一键部署**：
+   ```bash
+   npx wrangler deploy
+   ```
 
-在 Pages 设置中添加变量：
+#### 方式 B：通过 Cloudflare 网页控制台部署
 
-| 变量名 | 必填 | 说明 |
-|---|---|---|
-| **ADMIN** | ✅ | 后台管理面板登录密码 |
-| KEY | ❌ | 快速订阅路径密钥 |
-| UUID | ❌ | 固定 UUID（UUIDv4 格式） |
-| PROXYIP | ❌ | 全局反代 IP |
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Compute (Workers) → Workers 和 Pages → 创建 Worker**
+2. 点击 **创建 Worker**（Worker 名称不要包含 `vless`、`proxy` 等关键词）并点击部署
+3. 进入该 Worker 的 **设置 (Settings)**：
+   * **变量与机密 (Variables and Secrets)**：添加机密 `ADMIN`，值为你的管理密码；可添加变量 `KEY`（快速订阅密钥）。
+   * **绑定 (Bindings)**：添加 **KV 命名空间** 绑定，变量名称填 **`KV`**，选择你创建的 KV 命名空间。
+4. 进入 Worker 的 **代码编辑器 (Quick Edit)**，清空原有代码，将本地的 `_worker.js` 全部复制粘贴进去，点击 **部署 (Deploy)**。
 
-### 6. 绑定 KV 命名空间
+---
 
-1. 创建 KV 命名空间（名称不要包含 `bpb`）
-2. 在 Pages **设置 → 绑定** 中添加 KV 绑定，变量名称填 **kv**
-3. **重新部署**一次使绑定生效
+### 5. 部署到 Cloudflare Pages（备选）
 
-### 7. 绑定自定义域（推荐）
+1. 下载 `_worker.js`，将其压缩为 `worker.zip`（**注意：`_worker.js` 必须位于 zip 包根目录下**）
+2. **Workers 和 Pages → 创建 → Pages → 上传资产**，上传 `worker.zip` 部署
+3. 进入 Pages 设置：
+   * **环境变量**：添加 `ADMIN`（密码）
+   * **绑定**：添加 KV 绑定，变量名称填 `KV`
+4. **绑定自定义域**，并在“部署”页面重新触发部署一次以生效配置。
 
-Cloudflare 分配的 `.pages.dev` 域名可能被墙，建议绑定自己的域名。
+---
+
+### 6. 绑定自定义域与后台访问
+
+1. **绑定自定义域名**（国内访问必备）：
+   * 在 Worker / Pages 设置中的 **触发器 / 域和路由 (Domains & Routes)** 或 **自定义域** 绑定你的域名。
+2. **访问管理面板**：
+   * 打开浏览器访问：`https://你的域名/login` 或 `https://你的域名/admin`
+   * 输入设置的 `ADMIN` 密码即可登录管理后台
+   * *注意：直接访问根路径 `https://你的域名/` 会显示 Nginx 伪装页面，这是正常的防审查机制。*
+3. **获取客户端订阅**：
+   * 访问 `https://你的域名/<KEY>` 或在管理面板中复制各种客户端订阅链接。
 
 ---
 
