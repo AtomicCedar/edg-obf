@@ -1,17 +1,10 @@
 name = "edgetunnel-obfuscated"
 main = "_worker.js"
-compatibility_date = "2025-11-04"
+compatibility_date = "2026-07-28"
 keep_vars = true
 
-# KV 命名空间绑定（本地开发可用 LOCAL_KV_ID，生产部署请填入 Cloudflare 真实 KV ID）
-# 命令行创建：npx wrangler kv namespace create KV
 [[kv_namespaces]]
 binding = "KV"
-id = "LOCAL_KV_ID"
+id = "eea4d5a1677a4036a2dbdc1c392a1706"
 
-# 环境变量设置（也可在 Cloudflare 控制台添加）
-# [vars]
-# ADMIN = "你的管理员密码"
-# KEY = "你的订阅密钥"
-# PROXYIP = ""
 
