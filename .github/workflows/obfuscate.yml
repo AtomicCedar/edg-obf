@@ -15,12 +15,12 @@ jobs:
 
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "latest"
 
@@ -30,13 +30,13 @@ jobs:
 
       - name: ⬇️ Download latest edgetunnel worker
         run: |
-          curl -sL -o origin.js \
+          curl -sL -o /tmp/origin.js \
             "https://raw.githubusercontent.com/cmliu/edgetunnel/main/_worker.js"
-          echo "Downloaded origin.js ($(wc -c < origin.js) bytes)"
+          echo "Downloaded /tmp/origin.js ($(wc -c < /tmp/origin.js) bytes)"
 
       - name: 🔐 Obfuscate worker code
         run: |
-          javascript-obfuscator origin.js --output _worker.js \
+          javascript-obfuscator /tmp/origin.js --output _worker.js \
             --compact true \
             --control-flow-flattening true \
             --control-flow-flattening-threshold 0.75 \
@@ -62,10 +62,10 @@ jobs:
           echo "✅ Obfuscation successful"
 
       - name: 📝 Commit obfuscated code
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           branch: main
           commit_message: "🔐 Auto-obfuscate: update edgetunnel worker [skip ci]"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          file_pattern: "_worker.js origin.js"
+          file_pattern: "_worker.js"
           push_options: "--force-with-lease"
